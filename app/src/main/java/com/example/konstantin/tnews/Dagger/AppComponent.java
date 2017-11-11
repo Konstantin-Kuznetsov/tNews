@@ -18,11 +18,12 @@ import dagger.Component;
 @Singleton
 @Component(modules = {UtilsModule.class, DataProvidersModule.class, PresentersModule.class})
 public interface AppComponent {
-    void inject(DataManager dataManager);
-    void inject(RESTDataProvider restDataProvider);
 
     void inject(NewsDetailsPresenter newsDetailsPresenter);
     void inject(NewsListPresenter newsListPresenter);
+
+    void inject(DataManager dataManager);
+    void inject(RESTDataProvider restDataProvider);
 
     void inject(NewsListFragment newsListFragment);
     void inject(NewsDetailsFragment newsDetailsFragment);
