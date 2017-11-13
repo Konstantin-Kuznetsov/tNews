@@ -17,5 +17,13 @@ public class DataManager {
         DependencyInjector.getComponent().inject(this);
     }
 
+    public void getNewsList() {
+        restDataProvider.getNewsList();
+    }
+
+    public void getNewsDetailsById(int id) {
+        //TODO проверка в кэше, если нет- сетевой запрос
+        restDataProvider.getNewsDetailsById(id);
+    }
 
 }

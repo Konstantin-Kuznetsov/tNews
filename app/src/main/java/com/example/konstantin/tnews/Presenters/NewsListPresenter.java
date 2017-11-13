@@ -1,5 +1,7 @@
 package com.example.konstantin.tnews.Presenters;
 
+import android.support.annotation.NonNull;
+
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
 import com.example.konstantin.tnews.Model.DataManager;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListFragment;
@@ -20,4 +22,16 @@ public class NewsListPresenter {
     public NewsListPresenter() {
         DependencyInjector.getComponent().inject(this);
     }
+
+    // Прикрепление и открепление активити в зависимости от ЖЦ
+    public void attachView(@NonNull NewsListFragment view) {
+        bindedView = new WeakReference<NewsListFragment>(view);
+
+        dataManager.getNewsList(); // сетевой запрос списка новостей
+    }
+
+    public void detachView() {
+        bindedView = null;
+    }
+
 }

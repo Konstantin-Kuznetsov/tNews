@@ -3,7 +3,7 @@ package com.example.konstantin.tnews.Model;
 import com.example.konstantin.tnews.POJO.NewsDetailed.NewsDetailed;
 import com.example.konstantin.tnews.POJO.NewsList.NewsList;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
@@ -12,16 +12,18 @@ import retrofit2.http.Query;
  *      - загрузить список новостей с заголовками
  *      - загрузить текст новости по ID
  *
+ *  Ответ сервера заворачивается в Observable
+ *
  * Created by Konstantin on 08.11.2017.
  */
 
 public class tNewsApi {
     public interface tinkoffNewsInterface {
         @GET("news") // запрос списка заголовков новостей
-        Call<NewsList> getListOfNews();
+        Observable<NewsList> getListOfNews();
 
         @GET("news_content") // запрос содержимого новости по ее ID
-        Call<NewsDetailed> getNewsDetailed(
+        Observable<NewsDetailed> getNewsDetailed(
                 @Query("id") int id
         );
     }

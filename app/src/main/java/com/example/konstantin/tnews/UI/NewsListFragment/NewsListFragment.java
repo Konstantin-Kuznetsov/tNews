@@ -8,7 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.konstantin.tnews.Dagger.DependencyInjector;
+import com.example.konstantin.tnews.Presenters.NewsListPresenter;
 import com.example.konstantin.tnews.R;
+
+import javax.inject.Inject;
 
 /**
  * Фрагмент со списком заголовков новостей.
@@ -17,6 +21,9 @@ import com.example.konstantin.tnews.R;
  */
 
 public class NewsListFragment extends Fragment {
+    @Inject
+    NewsListPresenter presenter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,5 +35,23 @@ public class NewsListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_news_list, container, false);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        DependencyInjector.getComponent().inject(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        presenter.attachView(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        presenter.detachView();
     }
 }

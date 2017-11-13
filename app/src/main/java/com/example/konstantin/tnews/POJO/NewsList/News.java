@@ -1,5 +1,7 @@
 package com.example.konstantin.tnews.POJO.NewsList;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -34,5 +36,9 @@ public class News {
 
     public PublicationDate getPublicationDate() {
         return publicationDate;
+    }
+
+    public long getDateOfPublication() {
+        return getPublicationDate().getDateOfPublication();
     }
 }
