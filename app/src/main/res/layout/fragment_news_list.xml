@@ -7,31 +7,35 @@
     android:layout_height="match_parent"
     tools:context="com.example.konstantin.tnews.UI.MainActivity.NewsActivity">
 
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVert20"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.2"/>
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineVert80"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8"/>
+
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/newsListRecycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:id="@+id/newsListRecycler"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guidelineVert80"
+        app:layout_constraintStart_toStartOf="@+id/guidelineVert20"
+        />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="Fragment news list"
-        app:layout_constraintBottom_toBottomOf="@+id/newsListRecycler"
-        app:layout_constraintEnd_toEndOf="@+id/newsListRecycler"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/newsListRecycler"/>
+
+
 
 </android.support.constraint.ConstraintLayout>

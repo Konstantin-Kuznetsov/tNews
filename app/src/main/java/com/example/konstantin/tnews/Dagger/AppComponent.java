@@ -5,6 +5,7 @@ import com.example.konstantin.tnews.Model.RESTDataProvider;
 import com.example.konstantin.tnews.Presenters.NewsDetailsPresenter;
 import com.example.konstantin.tnews.Presenters.NewsListPresenter;
 import com.example.konstantin.tnews.UI.NewsDetailsFragment.NewsDetailsFragment;
+import com.example.konstantin.tnews.UI.NewsListFragment.NewsListAdapter;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListFragment;
 
 import javax.inject.Singleton;
@@ -16,7 +17,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {UtilsModule.class, DataProvidersModule.class, PresentersModule.class})
+@Component(modules = {AppModule.class, UtilsModule.class, DataProvidersModule.class, PresentersModule.class})
 public interface AppComponent {
 
     void inject(NewsDetailsPresenter newsDetailsPresenter);
@@ -27,4 +28,6 @@ public interface AppComponent {
 
     void inject(NewsListFragment newsListFragment);
     void inject(NewsDetailsFragment newsDetailsFragment);
+
+    void inject(NewsListAdapter newsListAdapter);
 }

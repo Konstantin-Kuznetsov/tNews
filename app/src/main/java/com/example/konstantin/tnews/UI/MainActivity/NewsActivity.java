@@ -26,12 +26,13 @@ public class NewsActivity extends AppCompatActivity {
         // иначе - загружаем уже подготовленный
         if (fragment == null) {
             fragment = createNewsListFragment();
-        }
 
-        fm.beginTransaction()
-                .add(R.id.fragment_container, fragment)
-                .addToBackStack(fragment.getClass().getName())
-                .commit();
+
+            fm.beginTransaction()
+                    .add(R.id.fragment_container, fragment)
+                    //.addToBackStack(fragment.getClass().getName())
+                    .commit();
+        }
     }
 
     protected Fragment createNewsListFragment() {

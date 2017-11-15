@@ -23,6 +23,7 @@ public class DependencyInjector extends Application {
     protected AppComponent buildComponent() {
         return DaggerAppComponent
                 .builder()
+                .appModule(new AppModule(this.getApplicationContext()))
                 .utilsModule(new UtilsModule())
                 .dataProvidersModule(new DataProvidersModule())
                 .presentersModule(new PresentersModule())

@@ -43,9 +43,10 @@ public class RESTDataProvider {
     }
 
     // запрос списка говостей(без дополнительных параметров)
-    public void getNewsList() {
+    public Observable<List<News>> getNewsList() {
 
         Observable<NewsList> newsListObservable = api.getListOfNews();
+
         // преобразуем поток из одного элемента Observable<NewsList>
         // в поток Observable<List<News>>, с объектом на каждую новость.
         // Сортировка - обратная, по полю DateOfPublication.
@@ -54,14 +55,16 @@ public class RESTDataProvider {
                 .toSortedList((news1, news2) -> (-1)*(Long.valueOf(news1.getDateOfPublication())).compareTo(news2.getDateOfPublication()))
                 .toObservable();
 
-        newsObservable
-                .subscribeOn(Schedulers.io()) // преобразования в io thread
-                .observeOn(AndroidSchedulers.mainThread()) // результат получаем в UI thread
-                .subscribe(sortedList -> {
-                    for (News n: sortedList) {
-                        Log.i(TAG, "UTC time:" + n.getDateOfPublication() + " Текст сообщения:" + n.getText());
-                    }
-                });
+        return newsObservable;
+
+//        newsObservable
+//                .subscribeOn(Schedulers.io()) // преобразования в io thread
+//                .observeOn(AndroidSchedulers.mainThread()) // результат получаем в UI thread
+//                .subscribe(sortedList -> {
+//                    for (News n: sortedList) {
+//                        Log.i(TAG, "UTC time:" + n.getDateOfPublication() + " Текст сообщения:" + n.getText());
+//                    }
+//                });
 
         //Observable<News> newsObservable = newsListObservable.concatMapIterable(getNewsList());
 
