@@ -1,5 +1,8 @@
 package com.example.konstantin.tnews.Model;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
@@ -23,6 +26,7 @@ public class DataManager {
 
     @Inject RESTDataProvider restDataProvider;
     @Inject CacheHelper cacheHelper;
+    @Inject Context context;
 
     private final String TAG = "tNews";
 
@@ -30,33 +34,39 @@ public class DataManager {
         DependencyInjector.getComponent().inject(this);
     }
 
-    public void getNewsList(Observer<List<News>> newsListObserver) {
-        if (cacheHelper.isListCached()) {
-            // возвращаем из кэша, если там есть что возвращать
-            Observable
-                    .just(cacheHelper.getCachedList())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(newsListObserver);
-            Log.i(TAG, "Загрузка закешированного списка заголовков новостей");
+    public void getNewsList(Observer<List<News>> newsListObserver, boolean updateList) {
+
+        if (updateList) {
+            // обновляем список
+            subscribeToNewList(newsListObserver);
         } else {
-            // Retrofit передает сразу объект Observable, на который мы подписываемся
-            // переданным из презентера observer
-            restDataProvider.getNewsList()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(newsListObserver);
-            Log.i(TAG, "Загрузка через API tinkoff нового списка заголовков новостей");
+            // возвращаем из кэша, если там есть что возвращать
+            // если кэш пуст - грузим из сети
+            if (cacheHelper.isListCached()) {
+                subscribeToCachedList(newsListObserver);
+            } else {
+                subscribeToNewList(newsListObserver);
+            }
         }
     }
 
-    // принудительное обновление
-    public void updateNewsList(Observer<List<News>> newsListObserver) {
+    private void subscribeToNewList(Observer<List<News>> observer) {
+        // Retrofit передает сразу объект Observable, на который мы подписываемся
+        // переданным из презентера observer
         restDataProvider.getNewsList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(newsListObserver);
+                .subscribe(observer);
         Log.i(TAG, "Загрузка через API tinkoff нового списка заголовков новостей");
+    }
+
+    private void subscribeToCachedList(Observer<List<News>> observer) {
+        Observable
+                .just(cacheHelper.getCachedList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+        Log.i(TAG, "Загрузка закешированного списка заголовков новостей");
     }
 
     public void getNewsDetailsById(int id) {
@@ -67,5 +77,11 @@ public class DataManager {
     // кеширование полученного списка новостей
     public void updateListNewsCache(List<News> news) {
         cacheHelper.putNewsList(news);
+    }
+
+    private boolean isInternetAvailable() {
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

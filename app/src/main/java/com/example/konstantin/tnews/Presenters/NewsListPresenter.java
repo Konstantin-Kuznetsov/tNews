@@ -2,6 +2,8 @@ package com.example.konstantin.tnews.Presenters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,11 +20,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
-import static io.reactivex.Single.just;
 
 /**
  * Created by Konstantin on 09.11.2017.
@@ -35,6 +35,7 @@ public class NewsListPresenter {
     private WeakReference<NewsListFragment> bindedView;
     private final String TAG = "tNews";
     RecyclerView newsRecycler;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     public NewsListPresenter() {
         DependencyInjector.getComponent().inject(this);
@@ -45,16 +46,20 @@ public class NewsListPresenter {
         bindedView = new WeakReference<NewsListFragment>(view);
         if (bindedView.get() != null) {
             newsRecycler = bindedView.get().getView().findViewById(R.id.newsListRecycler);
+            swipeRefreshLayout = bindedView.get().getView().findViewById(R.id.swipe_refresh_layout);
+            configureSwipeToRefresh();
         }
-
     }
 
     public void detachView() {
         bindedView = null;
+        newsRecycler = null;
+        swipeRefreshLayout = null;
     }
 
-    public void getListOfNews() {
-        dataManager.getNewsList(getListObserver()); // запрос списка новостей
+    // updateList: true - обновить с сервера, false вернуть закешированное
+    public void getListOfNews(boolean updateList) {
+        dataManager.getNewsList(getListObserver(), updateList); // запрос списка новостей
     }
 
     private Observer<List<News>> getListObserver() {
@@ -69,10 +74,10 @@ public class NewsListPresenter {
             @Override
             public void onNext(List<News> news) {
                 // обновление списка новостей в UI
-                if (newsRecycler != null) {
+                if (swipeRefreshLayout != null && newsRecycler != null) {
                     configureRecyclerView(news);
+                    swipeRefreshLayout.setRefreshing(false);
                 }
-
                 // кеширование полученного списка
                 dataManager.updateListNewsCache(news);
             }
@@ -80,6 +85,10 @@ public class NewsListPresenter {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.getLocalizedMessage());
+                if (bindedView.get().getView() != null) {
+                    Snackbar.make(bindedView.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
             }
 
             @Override
@@ -89,11 +98,20 @@ public class NewsListPresenter {
         };
     }
 
-    public void configureRecyclerView(List<News> news) {
+    private void configureRecyclerView(List<News> news) {
         NewsListAdapter newsListAdapter = new NewsListAdapter();
         newsRecycler.setAdapter(newsListAdapter);
         newsRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         newsListAdapter.setOrUpdateDataset(news);
     }
 
+    private void configureSwipeToRefresh() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);
+                getListOfNews(true);
+            }
+        });
+    }
 }

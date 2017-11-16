@@ -43,7 +43,7 @@ public class NewsListFragment extends Fragment {
         DependencyInjector.getComponent().inject(this);
 
         presenter.attachView(this);
-        presenter.getListOfNews();
+        presenter.getListOfNews(false); // вернуть закешированное
     }
 
     @Override
