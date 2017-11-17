@@ -21,8 +21,8 @@ import javax.inject.Inject;
  */
 
 public class NewsListFragment extends Fragment {
-    @Inject
-    NewsListPresenter presenter;
+
+    @Inject NewsListPresenter presenter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

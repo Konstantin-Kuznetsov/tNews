@@ -84,12 +84,11 @@ public class RESTDataProvider {
 //        });
     }
 
-    public void getNewsDetailsById(int id) {
-        final int newsId = id;
+    public Observable<NewsDetailed> getNewsDetailsById(int id) {
 
-        Observable<NewsDetailed> observableNewsDetailed = api.getNewsDetailed(newsId);
+        Observable<NewsDetailed> observableNewsDetailed = api.getNewsDetailed(id);
 
-
+        return observableNewsDetailed;
 
 //        callNewsDetailed.enqueue(new Callback<NewsDetailed>() {
 //            @Override
@@ -105,8 +104,6 @@ public class RESTDataProvider {
 //                handleOnFailure(call, t); // обработка неудачного запроса
 //            }
 //        });
-
-
     }
 
 

@@ -4,6 +4,7 @@ import com.example.konstantin.tnews.Model.DataManager;
 import com.example.konstantin.tnews.Model.RESTDataProvider;
 import com.example.konstantin.tnews.Presenters.NewsDetailsPresenter;
 import com.example.konstantin.tnews.Presenters.NewsListPresenter;
+import com.example.konstantin.tnews.UI.MainActivity.NewsActivity;
 import com.example.konstantin.tnews.UI.NewsDetailsFragment.NewsDetailsFragment;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListAdapter;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListFragment;
@@ -28,6 +29,7 @@ public interface AppComponent {
 
     void inject(NewsListFragment newsListFragment);
     void inject(NewsDetailsFragment newsDetailsFragment);
+    void inject(NewsActivity newsActivity);
 
     void inject(NewsListAdapter newsListAdapter);
 }

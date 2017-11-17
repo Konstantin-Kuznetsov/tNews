@@ -2,6 +2,7 @@ package com.example.konstantin.tnews.Model;
 
 import android.util.LruCache;
 
+import com.example.konstantin.tnews.POJO.NewsDetailed.NewsDetailed;
 import com.example.konstantin.tnews.POJO.NewsList.News;
 
 import java.util.List;
@@ -11,14 +12,14 @@ import java.util.List;
  */
 
 public class CacheHelper {
-    private final String TAG = "tNews";
+
     private final String NEWS_LIST = "news_list";
     private LruCache<String, List<News>> newsListCached;
-    private LruCache<Long, News> newsDetailsCached;
+    private LruCache<Integer, NewsDetailed> newsDetailsCached;
 
     public CacheHelper() {
         newsListCached = new LruCache<String, List<News>>(1);
-        newsDetailsCached = new LruCache<Long, News>(15); // последние 15 открытых новостей
+        newsDetailsCached = new LruCache<Integer, NewsDetailed>(5); // последние 15 открытых новостей
     }
 
     // true- есть закешированный список, false- пусто
@@ -34,17 +35,17 @@ public class CacheHelper {
         return newsListCached.get(NEWS_LIST);
     }
 
-    // true- есть закешированная новость, false- запрашивается впервые, либо запрашивалась давно
-    public boolean isNewsDetailsCached(long dateOfPublication) {
-        return newsDetailsCached.get(dateOfPublication) != null;
+    // true- есть закешированная новость, false- запрашивается впервые
+    public boolean isNewsDetailsCached(int newsId) {
+        return newsDetailsCached.get(newsId) != null;
     }
 
-    public void putNews(News news) {
-        newsDetailsCached.put(news.getDateOfPublication(), news);
+    public void putNewsDetails(NewsDetailed newsDetailed) {
+        newsDetailsCached.put(newsDetailed.getDetails().getTitle().getId(), newsDetailed);
     }
 
-    public News getNewsDetails(long dateOfPublication) {
-        return newsDetailsCached.get(dateOfPublication);
+    public NewsDetailed getCachedDetails(int newsId) {
+        return newsDetailsCached.get(newsId);
     }
 
 }

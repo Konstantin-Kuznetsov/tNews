@@ -12,6 +12,7 @@ import com.example.konstantin.tnews.Dagger.DependencyInjector;
 import com.example.konstantin.tnews.Model.DataManager;
 import com.example.konstantin.tnews.POJO.NewsList.News;
 import com.example.konstantin.tnews.R;
+import com.example.konstantin.tnews.UI.MainActivity.NewsActivity;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListAdapter;
 import com.example.konstantin.tnews.UI.NewsListFragment.NewsListFragment;
 
@@ -32,10 +33,11 @@ public class NewsListPresenter {
     @Inject DataManager dataManager;
     @Inject Context context;
 
-    private WeakReference<NewsListFragment> bindedView;
+    private WeakReference<NewsListFragment> bindedFragment;
+    private WeakReference<NewsActivity> bindedActivity;
     private final String TAG = "tNews";
-    RecyclerView newsRecycler;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private RecyclerView newsRecycler;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public NewsListPresenter() {
         DependencyInjector.getComponent().inject(this);
@@ -43,16 +45,24 @@ public class NewsListPresenter {
 
     // Прикрепление и открепление активити в зависимости от ЖЦ
     public void attachView(@NonNull NewsListFragment view) {
-        bindedView = new WeakReference<NewsListFragment>(view);
-        if (bindedView.get() != null) {
-            newsRecycler = bindedView.get().getView().findViewById(R.id.newsListRecycler);
-            swipeRefreshLayout = bindedView.get().getView().findViewById(R.id.swipe_refresh_layout);
+        bindedFragment = new WeakReference<NewsListFragment>(view);
+        if (bindedFragment.get() != null) {
+            newsRecycler = bindedFragment.get().getView().findViewById(R.id.newsListRecycler);
+            swipeRefreshLayout = bindedFragment.get().getView().findViewById(R.id.swipe_refresh_layout_list);
             configureSwipeToRefresh();
         }
     }
 
+    public void attachActivity(@NonNull NewsActivity view) {
+        bindedActivity = new WeakReference<NewsActivity>(view);
+    }
+
+    public void detachActivity() {
+        bindedActivity = null;
+    }
+
     public void detachView() {
-        bindedView = null;
+        bindedFragment = null;
         newsRecycler = null;
         swipeRefreshLayout = null;
     }
@@ -85,8 +95,8 @@ public class NewsListPresenter {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.getLocalizedMessage());
-                if (bindedView.get().getView() != null) {
-                    Snackbar.make(bindedView.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                if (bindedFragment.get().getView() != null) {
+                    Snackbar.make(bindedFragment.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -99,19 +109,30 @@ public class NewsListPresenter {
     }
 
     private void configureRecyclerView(List<News> news) {
-        NewsListAdapter newsListAdapter = new NewsListAdapter();
-        newsRecycler.setAdapter(newsListAdapter);
+        NewsListAdapter newsListAdapter = new NewsListAdapter(new NewsListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(News item) {
+                // создаем новый фрагмент и згружаем туда текст новости
+                Snackbar.make(bindedFragment.get().getView(), "ID=" + String.valueOf(item.getId()), Snackbar.LENGTH_LONG).show();
+                openNewsDetailsFragment(item.getId());
+            }
+        });
+
         newsRecycler.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        newsRecycler.setAdapter(newsListAdapter);
         newsListAdapter.setOrUpdateDataset(news);
     }
 
     private void configureSwipeToRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                swipeRefreshLayout.setRefreshing(true);
-                getListOfNews(true);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            swipeRefreshLayout.setRefreshing(true);
+            getListOfNews(true);
         });
+    }
+
+    private void openNewsDetailsFragment(int newsID) {
+        if (bindedActivity != null) {
+            bindedActivity.get().openNewsDetailsFragment(newsID);
+        }
     }
 }

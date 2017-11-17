@@ -33,9 +33,14 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
     @Inject Context context;
 
     private List<News> newsListData;
+    private OnItemClickListener listener;
     private final String TAG = "tNews";
 
-    public NewsListAdapter() {
+    public interface OnItemClickListener { // интерфейс листенера
+        void onItemClick(News item);
+    }
+    public NewsListAdapter(OnItemClickListener listener) {
+        this.listener = listener;
         DependencyInjector.getComponent().inject(this);
     }
 
@@ -55,6 +60,9 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(NewsListAdapter.ViewHolder holder, int position) {
+
+        // обработка клика на элементе
+        holder.bind(newsListData.get(position), listener, position);
 
         // Дата публикации новости. Данные приводятся к локальной TimeZone и форматируются
         Date pubDate = new Date(newsListData.get(position).getDateOfPublication());
@@ -83,6 +91,16 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
             super(itemView);
             dateOfPublication = itemView.findViewById(R.id.dateOfPublication);
             headerText = itemView.findViewById(R.id.headerText);
+        }
+
+        // обработка нажатия на элемент списка
+        public void bind(final News item, final OnItemClickListener listener, final int position) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onItemClick(item);
+                }
+            });
         }
     }
 }

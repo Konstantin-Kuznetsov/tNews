@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
+import com.example.konstantin.tnews.POJO.NewsDetailed.NewsDetailed;
 import com.example.konstantin.tnews.POJO.NewsList.News;
 
 import java.util.List;
@@ -69,14 +70,46 @@ public class DataManager {
         Log.i(TAG, "Загрузка закешированного списка заголовков новостей");
     }
 
-    public void getNewsDetailsById(int id) {
-        //TODO проверка в кэше, если нет- сетевой запрос
-        restDataProvider.getNewsDetailsById(id);
+    public void getNewsDetailsById(int newsId, Observer<NewsDetailed> newsDetailsObserver, boolean updateNews) {
+        if (updateNews) {
+            // обновляем новость
+            subscribeToNewsUpdate(newsId, newsDetailsObserver);
+        } else {
+            // возвращаем из кэша, если там есть что возвращать
+            // если кэш пуст - грузим из сети
+            if (cacheHelper.isNewsDetailsCached(newsId)) {
+                subscribeToCachedNewsDetails(newsId, newsDetailsObserver);
+            } else {
+                subscribeToNewsUpdate(newsId, newsDetailsObserver);
+            }
+        }
+    }
+
+    private void subscribeToNewsUpdate(int newsId, Observer<NewsDetailed> observer) {
+        restDataProvider.getNewsDetailsById(newsId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+        Log.i(TAG, "Загрузка через API tinkoff обновления текста новости ID=" + newsId);
+    }
+
+    private void subscribeToCachedNewsDetails(int newsId, Observer<NewsDetailed> observer) {
+        Observable
+                .just(cacheHelper.getCachedDetails(newsId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+        Log.i(TAG, "Загрузка закешированного текста новости ID=" + newsId);
     }
 
     // кеширование полученного списка новостей
     public void updateListNewsCache(List<News> news) {
         cacheHelper.putNewsList(news);
+    }
+
+    // кеширование полученного списка новостей
+    public void updateListDetailedCache(NewsDetailed newsDetailed) {
+        cacheHelper.putNewsDetails(newsDetailed);
     }
 
     private boolean isInternetAvailable() {

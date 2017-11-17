@@ -17,4 +17,16 @@ public class NewsDetailed {
 
     @SerializedName("trackingId")
     private long trackingId; // ?? служебная информация
+
+    public String getResultCode() {
+        return resultCode;
+    }
+
+    public Details getDetails() {
+        return details;
+    }
+
+    public long getTrackingId() {
+        return trackingId;
+    }
 }
