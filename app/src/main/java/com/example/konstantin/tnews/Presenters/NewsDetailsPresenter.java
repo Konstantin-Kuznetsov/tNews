@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
@@ -31,7 +32,7 @@ public class NewsDetailsPresenter {
 
     private WeakReference<NewsDetailsFragment> bindedView;
     private final String TAG = "tNews";
-    private TextView newsDetails;
+    private WebView newsDetails;
     private int currentID;
     SwipeRefreshLayout swipeRefreshLayout;
 
@@ -52,6 +53,7 @@ public class NewsDetailsPresenter {
     public void detachView() {
         bindedView = null;
         swipeRefreshLayout = null;
+        newsDetails = null;
     }
 
     public void setCurrentID(int currentID) {
@@ -77,7 +79,15 @@ public class NewsDetailsPresenter {
             public void onNext(NewsDetailed newsDetailed) {
                 // обновление списка новостей в UI
                 if (swipeRefreshLayout != null) {
-                    newsDetails.setText(Html.fromHtml(newsDetailed.getDetails().getContent())); // текст новости
+
+                    // отображение новости ва WebView для корректной работы
+                    // встречающихся в тексте ссылок
+                    newsDetails.loadDataWithBaseURL(null,
+                            newsDetailed.getDetails().getContent(),
+                            "text/html",
+                            "en_US",
+                            null);
+
                     swipeRefreshLayout.setRefreshing(false);
                 }
                 // кеширование полученного списка
@@ -87,7 +97,7 @@ public class NewsDetailsPresenter {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.getLocalizedMessage());
-                if (bindedView.get().getView() != null) {
+                if (bindedView != null && bindedView.get().getView() != null) {
                     Snackbar.make(bindedView.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }

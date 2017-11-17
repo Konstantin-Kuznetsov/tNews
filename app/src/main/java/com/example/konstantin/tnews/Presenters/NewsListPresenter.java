@@ -113,7 +113,7 @@ public class NewsListPresenter {
             @Override
             public void onItemClick(News item) {
                 // создаем новый фрагмент и згружаем туда текст новости
-                Snackbar.make(bindedFragment.get().getView(), "ID=" + String.valueOf(item.getId()), Snackbar.LENGTH_LONG).show();
+                Log.i(TAG, "Начало загрузка новости с ID=" + String.valueOf(item.getId()));
                 openNewsDetailsFragment(item.getId());
             }
         });
