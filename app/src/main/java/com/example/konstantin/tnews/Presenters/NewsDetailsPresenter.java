@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
@@ -34,8 +35,9 @@ public class NewsDetailsPresenter {
     private final String TAG = "tNews";
     private TextView errorText;
     private WebView newsDetails;
+    private Button reloadCachedButton;
     private int currentID;
-    SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public NewsDetailsPresenter() {
         DependencyInjector.getComponent().inject(this);
@@ -48,7 +50,9 @@ public class NewsDetailsPresenter {
             newsDetails = bindedView.get().getView().findViewById(R.id.textNewsDetails);
             swipeRefreshLayout = bindedView.get().getView().findViewById(R.id.swipe_refresh_layout_details);
             errorText = bindedView.get().getView().findViewById(R.id.errorTextDetails);
+            reloadCachedButton = bindedView.get().getView().findViewById(R.id.reloadNewsDetailsButton);
             configureSwipeToRefresh();
+            configureReloadCachedDetailsButton();
         }
     }
 
@@ -75,7 +79,8 @@ public class NewsDetailsPresenter {
             @Override
             public void onSubscribe(Disposable d) {
                 errorText.setVisibility(View.GONE);
-                Log.i(TAG, "Observer<NewsDetailed> метод onSubscribe(Disposable d) вызван");
+                reloadCachedButton.setVisibility(View.GONE);
+                Log.i(TAG, context.getString(R.string.onSubscribe_newsDetails));
             }
 
             @Override
@@ -104,20 +109,18 @@ public class NewsDetailsPresenter {
                     newsDetails.setVisibility(View.INVISIBLE);
                     errorText.setVisibility(View.VISIBLE);
                     errorText.setText(e.getLocalizedMessage());
-                    Snackbar.make(bindedView.get().getView(), "Error loading news.  Swipe to reload.", Snackbar.LENGTH_LONG).show();
+                    reloadCachedButton.setVisibility(View.VISIBLE);
+                    Snackbar.make(bindedView.get().getView(), R.string.swipe_to_reload, Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onComplete() {
-                Log.i(TAG, "Observer<NewsDetailed> метод onComplete() вызван");
+                Log.i(TAG, context.getString(R.string.onComplete_newsDetails));
             }
         };
     }
-
-
-
 
     private void configureSwipeToRefresh() {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -128,6 +131,10 @@ public class NewsDetailsPresenter {
                 getNewsDetails(currentID,true);
             }
         });
+    }
+
+    private void configureReloadCachedDetailsButton() {
+        reloadCachedButton.setOnClickListener(view -> getNewsDetails(currentID, false));
     }
 
 }

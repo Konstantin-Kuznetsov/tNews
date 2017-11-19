@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">tNews</string>
+    <string name="reload_cached_if_exist">Reload cached if exist</string>
+    <string name="swipe_to_reload">Error loading news.  Swipe to reload.</string>
+    <string name="onSubscribe_newsDetails"><![CDATA[Observer<NewsDetailed> метод onSubscribe(Disposable d) вызван]]></string>
+    <string name="onComplete_newsDetails"><![CDATA[Observer<NewsDetailed> метод onComplete() вызван]]></string>
+    <string name="onSubscribe_newsList"><![CDATA[Observer<List<News>> метод onSubscribe(Disposable d) вызван]]></string>
+    <string name="onComplete_newsList"><![CDATA[Observer<NewsDetailed> метод onComplete() вызван]]></string>
+    <string name="loading_news_by_id">Начало загрузка новости с ID=</string>
+    <string name="loading_by_tinkoff_api">Загрузка через API tinkoff нового списка заголовков новостей</string>
+    <string name="loading_cached_news_list">Загрузка закешированного списка заголовков новостей</string>
+    <string name="loading_by_tinkoff_api_id">Загрузка через API tinkoff обновления текста новости ID=</string>
+    <string name="loading_cached_news_details">Загрузка закешированного текста новости ID=</string>
 </resources>

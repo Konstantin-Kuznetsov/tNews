@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
@@ -40,6 +41,7 @@ public class NewsListPresenter {
     private final String TAG = "tNews";
     private RecyclerView newsRecycler;
     private TextView errorText;
+    private Button reloadCachedButton;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public NewsListPresenter() {
@@ -53,7 +55,9 @@ public class NewsListPresenter {
             newsRecycler = bindedFragment.get().getView().findViewById(R.id.newsListRecycler);
             swipeRefreshLayout = bindedFragment.get().getView().findViewById(R.id.swipe_refresh_layout_list);
             errorText = bindedFragment.get().getView().findViewById(R.id.errorTextList);
+            reloadCachedButton = bindedFragment.get().getView().findViewById(R.id.reloadNewsListButton);
             configureSwipeToRefresh();
+            configureReloadCachedListButton();
         }
     }
 
@@ -83,7 +87,8 @@ public class NewsListPresenter {
             @Override
             public void onSubscribe(Disposable d) {
                 errorText.setVisibility(View.GONE);
-                Log.i(TAG, "Observer<List<News>> метод onSubscribe(Disposable d) вызван");
+                reloadCachedButton.setVisibility(View.GONE);
+                Log.i(TAG, context.getString(R.string.onSubscribe_newsList));
             }
 
             @Override
@@ -105,14 +110,15 @@ public class NewsListPresenter {
                     newsRecycler.setVisibility(View.INVISIBLE);
                     errorText.setVisibility(View.VISIBLE);
                     errorText.setText(e.getLocalizedMessage());
-                    Snackbar.make(bindedFragment.get().getView(), "Error loading news list. Swipe to reload.", Snackbar.LENGTH_LONG).show();
+                    reloadCachedButton.setVisibility(View.VISIBLE);
+                    Snackbar.make(bindedFragment.get().getView(), R.string.swipe_to_reload, Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }
 
             @Override
             public void onComplete() {
-                Log.i(TAG, "Observer<List<News>> метод onComplete() вызван");
+                Log.i(TAG, context.getString(R.string.onComplete_newsList));
             }
         };
     }
@@ -122,7 +128,7 @@ public class NewsListPresenter {
             @Override
             public void onItemClick(News item) {
                 // создаем новый фрагмент и згружаем туда текст новости
-                Log.i(TAG, "Начало загрузка новости с ID=" + String.valueOf(item.getId()));
+                Log.i(TAG, context.getString(R.string.loading_news_by_id) + String.valueOf(item.getId()));
                 openNewsDetailsFragment(item.getId());
             }
         });
@@ -136,6 +142,15 @@ public class NewsListPresenter {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             swipeRefreshLayout.setRefreshing(true);
             getListOfNews(true);
+        });
+    }
+
+    private void configureReloadCachedListButton() {
+        reloadCachedButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getListOfNews(false);
+            }
         });
     }
 

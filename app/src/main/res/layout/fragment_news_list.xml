@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
+<android.support.v4.widget.SwipeRefreshLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_refresh_layout_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -50,6 +50,18 @@
             android:id="@+id/errorTextList"
             android:visibility="gone"
             android:textColor="@color/colorDarkText"/>
+
+        <Button
+            android:id="@+id/reloadNewsListButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:text="@string/reload_cached_if_exist"
+            android:textColor="@color/colorDarkText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/errorTextList" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v4.widget.SwipeRefreshLayout>

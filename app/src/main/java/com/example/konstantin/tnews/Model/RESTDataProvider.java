@@ -35,8 +35,6 @@ public class RESTDataProvider {
     @Inject Gson gson;
     @Inject tNewsApi.tinkoffNewsInterface api; // api новостей tinkoff
 
-    private final String TAG = "tNews";
-
     public RESTDataProvider() {
         // инъекция зависимостей с помощью Dagger2
         DependencyInjector.getComponent().inject(this);
@@ -56,11 +54,9 @@ public class RESTDataProvider {
                 .toObservable();
 
         return newsObservable;
-
     }
 
     public Observable<NewsDetailed> getNewsDetailsById(int id) {
-
         Observable<NewsDetailed> observableNewsDetailed = api.getNewsDetailed(id);
 
         return observableNewsDetailed;

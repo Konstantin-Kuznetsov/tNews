@@ -8,6 +8,7 @@ import android.util.Log;
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
 import com.example.konstantin.tnews.POJO.NewsDetailed.NewsDetailed;
 import com.example.konstantin.tnews.POJO.NewsList.News;
+import com.example.konstantin.tnews.R;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class DataManager {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
-        Log.i(TAG, "Загрузка через API tinkoff нового списка заголовков новостей");
+        Log.i(TAG, context.getString(R.string.loading_by_tinkoff_api));
     }
 
     private void subscribeToCachedList(Observer<List<News>> observer) {
@@ -67,7 +68,7 @@ public class DataManager {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
-        Log.i(TAG, "Загрузка закешированного списка заголовков новостей");
+        Log.i(TAG, context.getString(R.string.loading_cached_news_list));
     }
 
     public void getNewsDetailsById(int newsId, Observer<NewsDetailed> newsDetailsObserver, boolean updateNews) {
@@ -90,7 +91,7 @@ public class DataManager {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
-        Log.i(TAG, "Загрузка через API tinkoff обновления текста новости ID=" + newsId);
+        Log.i(TAG, context.getString(R.string.loading_by_tinkoff_api_id) + newsId);
     }
 
     private void subscribeToCachedNewsDetails(int newsId, Observer<NewsDetailed> observer) {
@@ -99,7 +100,7 @@ public class DataManager {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
-        Log.i(TAG, "Загрузка закешированного текста новости ID=" + newsId);
+        Log.i(TAG, context.getString(R.string.loading_cached_news_details) + newsId);
     }
 
     // кеширование полученного списка новостей

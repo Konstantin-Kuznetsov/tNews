@@ -74,7 +74,6 @@ public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ViewHo
 
         // заголовок
         holder.headerText.setText(Html.fromHtml(newsListData.get(position).getText()) );
-
     }
 
     @Override
