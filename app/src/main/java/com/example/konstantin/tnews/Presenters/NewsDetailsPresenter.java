@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -32,6 +32,7 @@ public class NewsDetailsPresenter {
 
     private WeakReference<NewsDetailsFragment> bindedView;
     private final String TAG = "tNews";
+    private TextView errorText;
     private WebView newsDetails;
     private int currentID;
     SwipeRefreshLayout swipeRefreshLayout;
@@ -46,6 +47,7 @@ public class NewsDetailsPresenter {
         if (bindedView.get() != null) {
             newsDetails = bindedView.get().getView().findViewById(R.id.textNewsDetails);
             swipeRefreshLayout = bindedView.get().getView().findViewById(R.id.swipe_refresh_layout_details);
+            errorText = bindedView.get().getView().findViewById(R.id.errorTextDetails);
             configureSwipeToRefresh();
         }
     }
@@ -72,6 +74,7 @@ public class NewsDetailsPresenter {
         return new Observer<NewsDetailed>() {
             @Override
             public void onSubscribe(Disposable d) {
+                errorText.setVisibility(View.GONE);
                 Log.i(TAG, "Observer<NewsDetailed> метод onSubscribe(Disposable d) вызван");
             }
 
@@ -79,9 +82,9 @@ public class NewsDetailsPresenter {
             public void onNext(NewsDetailed newsDetailed) {
                 // обновление списка новостей в UI
                 if (swipeRefreshLayout != null) {
-
                     // отображение новости ва WebView для корректной работы
                     // встречающихся в тексте ссылок
+                    newsDetails.setVisibility(View.VISIBLE);
                     newsDetails.loadDataWithBaseURL(null,
                             newsDetailed.getDetails().getContent(),
                             "text/html",
@@ -98,7 +101,10 @@ public class NewsDetailsPresenter {
             public void onError(Throwable e) {
                 Log.e(TAG, e.getLocalizedMessage());
                 if (bindedView != null && bindedView.get().getView() != null) {
-                    Snackbar.make(bindedView.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                    newsDetails.setVisibility(View.INVISIBLE);
+                    errorText.setVisibility(View.VISIBLE);
+                    errorText.setText(e.getLocalizedMessage());
+                    Snackbar.make(bindedView.get().getView(), "Error loading news.  Swipe to reload.", Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }

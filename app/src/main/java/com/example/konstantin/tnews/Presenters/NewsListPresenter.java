@@ -7,6 +7,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.konstantin.tnews.Dagger.DependencyInjector;
 import com.example.konstantin.tnews.Model.DataManager;
@@ -37,6 +39,7 @@ public class NewsListPresenter {
     private WeakReference<NewsActivity> bindedActivity;
     private final String TAG = "tNews";
     private RecyclerView newsRecycler;
+    private TextView errorText;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     public NewsListPresenter() {
@@ -49,6 +52,7 @@ public class NewsListPresenter {
         if (bindedFragment.get() != null) {
             newsRecycler = bindedFragment.get().getView().findViewById(R.id.newsListRecycler);
             swipeRefreshLayout = bindedFragment.get().getView().findViewById(R.id.swipe_refresh_layout_list);
+            errorText = bindedFragment.get().getView().findViewById(R.id.errorTextList);
             configureSwipeToRefresh();
         }
     }
@@ -78,12 +82,14 @@ public class NewsListPresenter {
         return new Observer<List<News>>() {
             @Override
             public void onSubscribe(Disposable d) {
+                errorText.setVisibility(View.GONE);
                 Log.i(TAG, "Observer<List<News>> метод onSubscribe(Disposable d) вызван");
             }
 
             @Override
             public void onNext(List<News> news) {
                 // обновление списка новостей в UI
+                newsRecycler.setVisibility(View.VISIBLE);
                 if (swipeRefreshLayout != null && newsRecycler != null) {
                     configureRecyclerView(news);
                     swipeRefreshLayout.setRefreshing(false);
@@ -95,8 +101,11 @@ public class NewsListPresenter {
             @Override
             public void onError(Throwable e) {
                 Log.e(TAG, e.getLocalizedMessage());
-                if (bindedFragment.get().getView() != null) {
-                    Snackbar.make(bindedFragment.get().getView(), e.getLocalizedMessage(), Snackbar.LENGTH_LONG).show();
+                if (bindedFragment != null && bindedFragment.get().getView() != null) {
+                    newsRecycler.setVisibility(View.INVISIBLE);
+                    errorText.setVisibility(View.VISIBLE);
+                    errorText.setText(e.getLocalizedMessage());
+                    Snackbar.make(bindedFragment.get().getView(), "Error loading news list. Swipe to reload.", Snackbar.LENGTH_LONG).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
             }
