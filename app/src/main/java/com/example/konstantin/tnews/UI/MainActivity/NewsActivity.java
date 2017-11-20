@@ -18,7 +18,6 @@ public class NewsActivity extends AppCompatActivity {
     @Inject NewsListPresenter presenter;
 
     private final String NEWS_ID = "news_id";
-
     private FragmentManager fm;
     private Fragment fragment;
 

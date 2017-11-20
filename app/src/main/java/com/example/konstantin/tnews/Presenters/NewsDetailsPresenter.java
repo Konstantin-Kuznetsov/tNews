@@ -123,6 +123,15 @@ public class NewsDetailsPresenter {
     }
 
     private void configureSwipeToRefresh() {
+        // отключение swipe to refresh пока вложенный webview не будет прокручен до самого верха
+        newsDetails.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+                if (newsDetails.getScrollY() == 0) swipeRefreshLayout.setEnabled(true);
+                else swipeRefreshLayout.setEnabled(false);
+            }
+        });
+
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
